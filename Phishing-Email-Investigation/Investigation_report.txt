@@ -1,0 +1,52 @@
+PHISHING EMAIL INVESTIGATION REPORT
+----------------------------------
+
+Case Type: Phishing Email
+Threat Category: Social Engineering
+Date: [Your date]
+
+1. Overview
+-----------
+This investigation analyses a phishing email using a life insurance theme to lure recipients
+into interacting with an untrusted external link.
+
+2. Email Summary
+----------------
+Subject: Life Insurance - Why Pay More?
+Sender: 12a1mailbot1@web.de
+Format: HTML
+
+3. Initial Indicators
+---------------------
+- Deceptive promotional language
+- Urgent call-to-action
+- Suspicious sender identity
+- Embedded external hyperlink
+
+4. Header Analysis
+------------------
+The email headers indicate multiple unauthorised mail relays across unrelated domains.
+Routing inconsistencies and sender domain mismatch suggest spoofed or abused infrastructure.
+
+5. Content & Social Engineering Analysis
+----------------------------------------
+The email leverages emotional manipulation related to family financial security and uses
+promotional incentives to pressure user interaction.
+
+6. Indicators of Compromise (IOCs)
+----------------------------------
+- Sender Email: 12a1mailbot1@web.de
+- Subject Line: Life Insurance - Why Pay More?
+- Phishing URL: hxxp://website[.]e365[.]cc/savequote
+
+7. Final Assessment
+-------------------
+Based on header anomalies, infrastructure inconsistencies, and deceptive content, this email
+is confirmed to be a phishing attempt.
+
+8. Recommended Actions
+----------------------
+- Block sender and associated infrastructure
+- Add URLs to web filtering controls
+- Update phishing detection rules
+- User awareness training
