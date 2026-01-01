@@ -1,0 +1,103 @@
+Brute Force Attack Analysis – Defensive Perspective
+==================================================
+
+Author: Mohit Kukreja
+Environment: Simulated Lab (TryHackMe)
+Room: Brute Force Heroes
+Date: <add completion date>
+
+1. Executive Summary
+-------------------
+This report documents the analysis of multiple brute-force attack techniques performed in a controlled lab environment. The purpose of this exercise was to understand how brute-force attacks are executed, how different tools behave at the protocol and application level, and how these activities would appear from a defensive (SOC / Blue Team) perspective.
+
+The exercise highlights key attacker behaviours, detection opportunities, and defensive controls relevant to real-world security operations.
+
+2. Scope and Intent
+-------------------
+- This activity was conducted in a legally authorised lab environment.
+- The goal was defensive education, not exploitation.
+- All findings are analysed from a detection, monitoring, and prevention standpoint.
+
+3. Attack Vectors Observed
+--------------------------
+The lab demonstrated brute-force techniques across multiple services:
+
+- Web application authentication (HTTP POST)
+- SSH authentication
+- Credential guessing against hashed passwords
+
+Each scenario exposed different indicators and monitoring challenges relevant to defenders.
+
+4. Tooling Observed (Attacker Perspective)
+------------------------------------------
+The following tools and techniques were analysed to understand attacker behaviour:
+
+- Burp Suite (GUI-based HTTP brute force)
+- Patator (CLI-based HTTP and SSH brute force)
+- OWASP ZAP (GUI-based fuzzing and credential discovery)
+- Hydra (SSH brute forcing)
+- Hashcat / John the Ripper (offline hash brute force)
+
+Understanding these tools allows defenders to better anticipate attacker tradecraft.
+
+5. Key Observations and Detection Indicators
+--------------------------------------------
+Across the lab, the following indicators were consistently observed:
+
+- High volume of authentication attempts in short timeframes
+- Repeated login failures from single source IPs
+- Unusual request patterns and payload repetition
+- Authentication responses with differing response sizes or headers
+- Encoded credential attempts (URL/Base64 encoded passwords)
+- Offline brute forcing following hash exposure
+
+6. Defensive Detection Opportunities
+------------------------------------
+From a Blue Team perspective, the following detection points are critical:
+
+Web Applications:
+- Monitor POST request frequency to login endpoints
+- Alert on repeated failed logins per IP or account
+- Track abnormal response size variations
+- Detect CSRF token misuse or replay attempts
+
+SSH Services:
+- Monitor failed SSH authentication attempts
+- Detect rapid username enumeration
+- Alert on encoded or malformed password submissions
+- Enforce rate limiting and lockout policies
+
+Credential and Hash Security:
+- Protect sensitive files (e.g., /etc/shadow)
+- Monitor for unauthorised access to credential stores
+- Detect offline cracking preparation activities
+
+7. Impact Assessment
+--------------------
+If these activities occurred in a real environment, potential impacts include:
+- Account compromise
+- Privilege escalation
+- Lateral movement
+- Data exposure
+
+The lab demonstrates how weak authentication controls significantly increase risk.
+
+8. Defensive Recommendations
+----------------------------
+Based on the observed techniques, the following controls are recommended:
+
+- Enforce MFA for all remote access
+- Implement account lockout and rate limiting
+- Enable centralised log collection (SIEM)
+- Monitor authentication anomalies
+- Secure credential storage and permissions
+- Apply Web Application Firewalls (WAF)
+- Regularly test detection rules using adversary simulations
+
+9. Blue Team Takeaways
+---------------------
+This exercise reinforces that understanding attacker tooling and methodology is essential for effective defence. By analysing brute-force techniques in a controlled environment, defenders can design stronger detection logic, improve alert fidelity, and respond faster to real-world threats.
+
+10. Conclusion
+--------------
+The Brute Force Heroes lab provided valuable insight into brute-force attack mechanics and their defensive implications. The knowledge gained directly supports SOC operations, incident detection, and authentication security hardening.
