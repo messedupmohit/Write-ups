@@ -1,0 +1,129 @@
+Title: AWS Honeypot Attack Analysis – Attacker Behaviour and Initial Access Patterns
+
+================================================================
+1. Executive Summary
+================================================================
+This report documents the analysis of real-world attack data collected from honeypots deployed on Amazon Web Services (AWS). The objective of this analysis is to identify attacker behaviour, common exploitation techniques, and the security implications of exposing services in a cloud environment.
+
+The analysis shows that the majority of observed activity consists of automated, opportunistic attacks. SSH services were heavily targeted through brute-force and credential spraying attempts. No evidence of successful compromise or post-exploitation activity was identified in the dataset.
+
+================================================================
+2. Data Source and Scope
+================================================================
+The data analysed in this report originates from a publicly available AWS honeypot dataset hosted on Kaggle. The dataset contains approximately 450,000 recorded attack events.
+
+Scope of analysis:
+- Network-based attack activity
+- Focus on SSH (destination port 22)
+- Behavioural analysis rather than attribution
+- SOC detection and triage perspective
+
+================================================================
+3. Observed Attacker Behaviour
+================================================================
+
+3.1 Automated Scanning Activity
+Attack patterns strongly indicate automation:
+- High-frequency connection attempts
+- Repeated traffic from the same source IPs
+- Uniform timing patterns typical of scanning tools and botnets
+
+This behaviour suggests non-targeted, internet-wide scanning rather than manual intrusion attempts.
+
+3.2 SSH Brute-Force Attempts
+SSH was one of the most frequently targeted services in the dataset.
+
+Observed characteristics:
+- Repeated authentication attempts against port 22
+- Credential spraying behaviour rather than targeted guessing
+- No interactive or session-based activity observed
+
+These patterns align with common brute-force frameworks used by automated threat actors.
+
+3.3 Source IP Concentration
+Analysis revealed that a relatively small number of IP addresses generated a disproportionately large volume of attack traffic.
+
+This indicates:
+- Use of compromised hosts or rented infrastructure
+- Centralised automation
+- Low concern for stealth or persistence
+
+================================================================
+4. Common Exploitation Attempts
+================================================================
+The dataset primarily captures initial access attempts rather than successful exploitation.
+
+Observed exploitation techniques include:
+- SSH brute-force authentication attempts
+- Broad scanning of cloud IP ranges
+- Repetitive probing without follow-up interaction
+
+No evidence of:
+- Privilege escalation
+- Lateral movement
+- Malware execution
+- Data exfiltration
+
+This supports the conclusion that attacks were opportunistic and unsuccessful.
+
+================================================================
+5. MITRE ATT&CK Mapping
+================================================================
+Observed attacker behaviour was mapped to the MITRE ATT&CK framework to standardise threat classification.
+
+Tactic: Initial Access
+- Technique ID: T1110
+- Technique Name: Brute Force
+- Evidence:
+  - High-volume SSH authentication attempts
+  - Repeated credential guessing patterns
+- Confidence Level: High
+
+Tactic: Reconnaissance
+- Technique ID: T1046
+- Technique Name: Network Service Discovery
+- Evidence:
+  - Repeated probing of exposed ports
+  - Broad scanning behaviour across cloud infrastructure
+- Confidence Level: High
+
+Tactic: Resource Development
+- Technique ID: T1587
+- Technique Name: Develop Capabilities (Automated Tools)
+- Evidence:
+  - Uniform attack timing
+  - High repetition rate across targets
+- Confidence Level: Medium
+
+No confirmed post-compromise techniques were observed.
+
+================================================================
+6. SOC Interpretation and Threat Assessment
+================================================================
+From a SOC perspective, the observed activity represents background internet noise that must be monitored but prioritised appropriately.
+
+Threat characteristics:
+- Opportunistic
+- Automated
+- Low sophistication
+- High volume
+
+Single events are low risk; however, sustained activity over time increases operational relevance.
+
+================================================================
+7. Defensive Recommendations
+================================================================
+Based on the analysis, the following defensive measures are recommended:
+
+- Restrict SSH access using cloud security groups
+- Disable password-based SSH authentication
+- Enforce SSH key-based authentication
+- Implement alert thresholds for repeated failed logins
+- Correlate attack frequency with IP reputation data
+
+================================================================
+8. Conclusion
+================================================================
+This analysis demonstrates that exposed cloud services are continuously targeted by automated attackers. While individual attempts are low risk, the persistent nature of these attacks highlights the importance of strong access controls, effective monitoring, and intelligent alerting within a Security Operations Centre.
+
+Understanding baseline attack noise is critical for accurate triage and effective incident response.
