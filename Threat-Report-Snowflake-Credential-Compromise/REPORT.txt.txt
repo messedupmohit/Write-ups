@@ -1,0 +1,150 @@
+Threat Report
+Snowflake Credential Compromise Campaign (2024)
+
+1. Executive Summary
+-------------------
+In 2024, multiple organisations reported unauthorised access to their Snowflake
+cloud data environments. Subsequent investigations confirmed that these incidents
+were caused by the abuse of valid stolen credentials rather than exploitation of a
+software vulnerability in the Snowflake platform.
+
+Attackers successfully authenticated using legitimate usernames and passwords on
+accounts that did not enforce multi-factor authentication (MFA). Because access
+appeared legitimate, detection was delayed and attackers were able to access
+sensitive data before containment.
+
+This campaign highlights the critical importance of identity security and monitoring
+successful authentication activity in cloud environments.
+
+2. Threat Classification
+------------------------
+Attack Type:
+- Credential Compromise
+- Cloud Account Takeover
+
+Initial Access Technique:
+- Use of valid stolen credentials
+
+Target Environment:
+- Snowflake cloud data platforms
+
+Affected Sectors:
+- Retail
+- Finance
+- Technology
+- Other data-driven organisations
+
+3. MITRE ATT&CK Mapping
+----------------------
+Primary Technique:
+- T1078 – Valid Accounts
+
+Supporting Techniques:
+- T1110 – Credential Access (pre-compromise phase)
+- T1530 – Data from Cloud Storage
+- T1041 – Exfiltration Over Command and Control Channel (contextual)
+
+4. Threat Description
+---------------------
+The attackers obtained Snowflake account credentials through prior credential theft
+activity. Sources of credential exposure included:
+
+- Infostealer malware infections on user endpoints
+- Credential reuse from unrelated data breaches
+- Previously compromised systems
+
+Once valid credentials were obtained, attackers identified Snowflake accounts that
+lacked MFA enforcement. Authentication was performed using standard login mechanisms,
+resulting in legitimate access without triggering traditional security controls.
+
+No privilege escalation or vulnerability exploitation was required.
+
+5. Attack Flow
+--------------
+1. Credentials are harvested from external sources
+2. Stolen credentials are tested against Snowflake login endpoints
+3. Successful authentication using valid credentials
+4. Access to Snowflake databases and data assets
+5. Execution of queries and bulk data access
+6. Detection triggered by abnormal behaviour or external notification
+
+6. Indicators of Compromise (IOCs)
+---------------------------------
+Authentication Indicators:
+- Successful logins without MFA challenges
+- Logins from unfamiliar geolocations
+- Access outside normal business hours
+
+Account Indicators:
+- Long-lived credentials without rotation
+- Over-privileged user or service accounts
+- MFA disabled on accounts with sensitive access
+
+Data Access Indicators:
+- Sudden increase in query volume
+- Access to datasets outside normal usage patterns
+- Large-scale data exports or bulk queries
+
+7. Detection Considerations
+---------------------------
+SOC teams should focus on detecting abnormal but successful activity, including:
+
+- Valid logins from new countries or IP ranges
+- Accounts accessing unusually large datasets
+- Service accounts used interactively
+- Changes in access patterns over short time periods
+
+Relevant log sources include:
+- Snowflake access and query audit logs
+- Cloud identity provider authentication logs
+- Network egress monitoring where applicable
+
+8. Impact Assessment
+--------------------
+Potential impact of successful credential compromise includes:
+
+- Exposure of sensitive customer or business data
+- Regulatory and compliance violations
+- Financial loss and reputational damage
+- Extended attacker dwell time due to low visibility
+
+Because authentication is successful, these attacks often evade detection for
+longer periods compared to traditional intrusion attempts.
+
+9. Mitigation and Recommendations
+---------------------------------
+Immediate Actions:
+- Enforce MFA on all Snowflake user and service accounts
+- Rotate and invalidate exposed credentials
+- Review authentication logs for suspicious activity
+- Reduce excessive account privileges
+
+Preventive Controls:
+- Implement conditional access policies
+- Restrict access using IP allowlists
+- Apply least privilege access principles
+- Centralise cloud logs into a SIEM
+
+Long-Term Improvements:
+- Regular credential hygiene audits
+- Behaviour-based anomaly detection
+- Cloud security posture management
+- User security awareness training
+
+10. Lessons Learned
+-------------------
+- Successful authentication does not guarantee legitimacy
+- Credential hygiene is critical in cloud environments
+- MFA significantly reduces account takeover risk
+- Behavioural monitoring is essential for cloud SOC operations
+
+11. Conclusion
+--------------
+The Snowflake credential compromise campaign of 2024 demonstrates how attackers can
+achieve significant access without exploiting software vulnerabilities.
+
+By abusing valid credentials and weak authentication controls, attackers bypassed
+traditional defences and accessed sensitive cloud-hosted data.
+
+Strong identity security, enforced MFA, and proactive monitoring remain the most
+effective defences against credential-based cloud threats.
