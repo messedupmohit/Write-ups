@@ -1,0 +1,143 @@
+# Incident Report – Slingshot Web Server Compromise
+
+## 1. Executive Summary
+On 26 July 2023, Slingway Inc.’s e-commerce web server was compromised by an external attacker. Using Elastic Stack logs, a full investigation was conducted to identify attacker activity, exploited vulnerabilities, compromised accounts, and data exfiltration.
+
+The attacker successfully enumerated directories, brute-forced administrative credentials, uploaded a web shell, accessed sensitive configuration files via Local File Inclusion (LFI), and exported a customer database containing credit card information.
+
+This report documents the investigation findings and provides security recommendations.
+
+---
+
+## 2. Incident Scope
+- **Affected System:** Public-facing e-commerce web server
+- **Log Source:** Elastic Stack (Web server logs)
+- **Incident Date:** 26 July 2023
+- **Analyst Role:** SOC Analyst (Blue Team)
+
+---
+
+## 3. Attacker Identification
+
+### Attacker IP Address
+- **IP:** `10.0.2.15`
+- **Evidence:** High number of connections observed in `transaction.remote.address`
+
+This IP was responsible for scanning, enumeration, authentication abuse, and post-exploitation activity.
+
+---
+
+## 4. Reconnaissance Phase
+
+### 4.1 Network Scanning
+- **Tool Identified:** Nmap Scripting Engine
+- **Evidence:** `request.headers.user-agent`
+- **Purpose:** Identify open services and server behaviour
+
+### 4.2 Directory Enumeration
+- **Tool:** Gobuster
+- **User-Agent:** `Mozilla/5.0 (Gobuster)`
+- **404 Errors Observed:** `1867`
+- **Interpretation:** Aggressive directory brute-forcing
+
+### Interesting Directory Discovered
+- **Flag:** `a76637b62ea99acda12f5859313f539a`
+
+---
+
+## 5. Initial Access
+
+### Discovered Login Page
+- **Path:** `/admin-login.php`
+
+### Brute-Force Attack
+- **Tool:** Hydra
+- **User-Agent:** `Mozilla/4.0 (Hydra)`
+- **Attack Type:** Credential brute-force against admin panel
+
+### Compromised Credentials
+- **Username:** `admin`
+- **Password:** `thx1138`
+- **Encoding:** Base64 (decoded using CyberChef)
+
+---
+
+## 6. Post-Exploitation
+
+### Web Shell Upload
+- **File Name:** `easy-simple-php-webshell.php`
+- **Location:** `/admin/`
+- **Flag Found:** `THM{ecb012e53a58818cbd17a924769ec447}`
+
+### First Command Executed
+- **Command:** `whoami`
+- **Purpose:** Confirm execution context
+
+---
+
+## 7. Privilege Abuse & Lateral Actions
+
+### Local File Inclusion (LFI)
+- **Target File:** `/etc/phpmyadmin/config-db.php`
+- **Outcome:** Database credentials disclosure
+
+### Database Manager Access
+- **Directory:** `/phpmyadmin`
+
+---
+
+## 8. Data Exfiltration
+
+### Database Exported
+- **Database Name:** `customer_credit_cards`
+- **Impact:** Exposure of sensitive customer data
+
+### Malicious Database Modification
+- **Inserted Flag:** `c6aa3215a7d519eeb40a660f3b76e64c`
+
+---
+
+## 9. Attack Timeline (High-Level)
+1. Nmap scan initiated
+2. Gobuster directory enumeration
+3. Admin login page discovered
+4. Hydra brute-force attack
+5. Admin credentials compromised
+6. Web shell uploaded
+7. Command execution via web shell
+8. LFI used to extract DB credentials
+9. Database accessed and exported
+10. Malicious data inserted
+
+---
+
+## 10. Impact Assessment
+- Administrative account compromise
+- Web server integrity loss
+- Customer database exposure
+- Potential regulatory and reputational damage
+
+---
+
+## 11. Recommendations
+
+### Immediate Actions
+- Reset all administrative credentials
+- Remove uploaded web shells
+- Revoke exposed database credentials
+- Notify affected customers
+
+### Preventive Measures
+- Enforce strong password policies
+- Implement account lockout and MFA
+- Restrict admin panel access
+- Patch LFI vulnerabilities
+- Deploy WAF and IDS/IPS
+- Improve log monitoring and alerting
+
+---
+
+## 12. Conclusion
+This investigation confirmed a full compromise of Slingway Inc.’s web server and database due to weak authentication controls and vulnerable web application components.
+
+The attack could have been detected earlier with stronger monitoring and preventative controls. Proper remediation and long-term security improvements are required to prevent recurrence.
