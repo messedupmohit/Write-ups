@@ -1,0 +1,259 @@
+# 🛡️ Incident Report – Hunt Me I: Payment Collectors
+
+## 📖 Executive Summary
+
+This report documents a host-based incident investigation conducted in the
+TryHackMe room “Hunt Me I – Payment Collectors”.
+
+The investigation revealed a phishing-based initial access that resulted in
+PowerShell execution, internal enumeration, discovery of sensitive financial
+data, and preparation for data exfiltration.
+
+The attacker leveraged Living-off-the-Land techniques and publicly available
+PowerShell tooling to avoid detection. This report documents the investigation
+chronologically, supported by evidence at each stage.
+
+---
+
+## 🧪 Investigation Environment
+
+- Platform: TryHackMe
+- Investigation Type: Host-based Threat Hunting
+- Evidence Standard: One screenshot per investigation step
+
+---
+
+## 🔍 Incident Timeline & Analysis
+
+### Initial Access – Phishing Attachment
+
+The investigation began by analysing user activity prior to suspicious behaviour.
+Reviewing the system artefacts revealed that the user had recently downloaded a
+compressed archive.
+
+The downloaded file was identified as:
+
+Invoice_AT_2023-227.zip
+
+This ZIP file represents the **initial attack vector**, consistent with phishing
+campaigns that deliver malware via archived attachments.
+
+📸 Screenshot Evidence:  
+`screenshots/01_downloaded_zip_file.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the browser download history listing
+`Invoice_AT_2023-227.zip`, confirming the file was retrieved by the user and
+establishing the point of initial compromise.
+
+---
+
+### Malicious File Execution – LNK Abuse
+
+Upon inspecting the contents of the downloaded ZIP archive, a single file was
+identified:
+
+Payment_Invoice.pdf.lnk.lnk
+
+The use of a **double file extension** is a well-known attacker technique used
+to disguise shortcuts as legitimate documents.
+
+📸 Screenshot Evidence:  
+`screenshots/02_extracted_lnk_file.png`
+
+**Screenshot Explanation:**  
+The screenshot displays the extracted ZIP contents and clearly shows the
+`.pdf.lnk.lnk` extension, confirming the file is a Windows shortcut rather than
+a legitimate PDF.
+
+---
+
+### Payload Execution – PowerShell Spawned
+
+Execution of the malicious LNK file resulted in the spawning of a PowerShell
+process. This indicates that the shortcut was configured to execute attacker-
+controlled commands.
+
+📸 Screenshot Evidence:  
+`screenshots/03_powershell_execution.png`
+
+**Screenshot Explanation:**  
+The screenshot shows process execution logs where `powershell.exe` is launched
+as a child process, confirming the LNK file was used to trigger PowerShell-based
+payload execution.
+
+---
+
+### Command & Control – Reverse Shell Setup
+
+Further analysis of the PowerShell activity revealed that the attacker downloaded
+a publicly available reverse shell utility:
+
+powercat.ps1
+
+This script was retrieved from GitHub and used to establish a remote connection
+back to the attacker.
+
+📸 Screenshot Evidence:  
+`screenshots/04_powercat_download.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the PowerShell command fetching `powercat.ps1` from an
+external repository, confirming the attacker’s intent to establish remote access.
+
+---
+
+### Network Communication – Reverse Shell Port
+
+The PowerShell command used to launch Powercat specified a listening port for
+the reverse shell connection.
+
+The port identified was:
+
+19282
+
+📸 Screenshot Evidence:  
+`screenshots/05_reverse_shell_port.png`
+
+**Screenshot Explanation:**  
+The screenshot highlights the PowerShell command parameters where port `19282`
+is defined, confirming the network channel used for attacker access.
+
+---
+
+### Post-Compromise Enumeration – Host Reconnaissance
+
+Once access was established, the attacker performed host reconnaissance using
+native Windows utilities. The first tool observed was:
+
+systeminfo.exe
+
+📸 Screenshot Evidence:  
+`screenshots/06_systeminfo_execution.png`
+
+**Screenshot Explanation:**  
+The screenshot shows execution of `systeminfo.exe`, indicating enumeration of
+system configuration, OS details, and patch levels.
+
+---
+
+### Domain Enumeration – Active Directory Recon
+
+The attacker then escalated reconnaissance to the domain level by downloading
+and executing:
+
+powerview.ps1
+
+This tool is commonly used for Active Directory enumeration.
+
+📸 Screenshot Evidence:  
+`screenshots/07_powerview_usage.png`
+
+**Screenshot Explanation:**  
+The screenshot shows PowerShell importing and executing `powerview.ps1`,
+confirming domain-level enumeration activity.
+
+---
+
+### Discovery of Sensitive Data – Network Share Access
+
+Using the results of domain enumeration, the attacker identified a network share
+containing financial records:
+
+SSF-FinancialRecords
+
+📸 Screenshot Evidence:  
+`screenshots/08_network_share_identified.png`
+
+**Screenshot Explanation:**  
+The screenshot displays enumeration output listing the
+`SSF-FinancialRecords` share, confirming discovery of sensitive data storage.
+
+---
+
+### Data Staging – Preparing for Exfiltration
+
+The attacker copied the contents of the financial share to a local directory on
+the compromised host:
+
+C:\Users\michael.ascot\Downloads\exfiltration
+
+📸 Screenshot Evidence:  
+`screenshots/09_exfiltration_directory.png`
+
+**Screenshot Explanation:**  
+The screenshot shows files being copied into the `exfiltration` directory,
+indicating data staging prior to exfiltration.
+
+---
+
+### Identification of Sensitive Files
+
+Within the staged data, a sensitive Excel document was identified:
+
+ClientPortfolioSummary.xlsx
+
+📸 Screenshot Evidence:  
+`screenshots/10_sensitive_excel_file.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the Excel file present in the staging directory, confirming
+the attacker accessed client financial information.
+
+---
+
+### Data Packaging – Exfiltration Archive Creation
+
+To prepare the data for transfer, the attacker compressed the files into a ZIP
+archive:
+
+exfilt8me.zip
+
+📸 Screenshot Evidence:  
+`screenshots/11_exfiltration_zip.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the ZIP archive being created, confirming the final
+preparation step before exfiltration.
+
+---
+
+### Exfiltration Destination Identified
+
+Network activity analysis revealed the data was intended to be exfiltrated to
+the following domain:
+
+haz4rdw4re.io
+
+📸 Screenshot Evidence:  
+`screenshots/12_exfiltration_domain.png`
+
+**Screenshot Explanation:**  
+The screenshot highlights outbound communication to `haz4rdw4re.io`,
+confirming the attacker-controlled destination.
+
+---
+
+## 🚨 Indicators of Compromise (IOCs)
+
+- Invoice_AT_2023-227.zip
+- Payment_Invoice.pdf.lnk.lnk
+- powershell.exe
+- powercat.ps1
+- powerview.ps1
+- SSF-FinancialRecords
+- exfilt8me.zip
+- haz4rdw4re.io
+
+---
+
+## 📘 Conclusion
+
+This investigation confirms a phishing-driven compromise that progressed from
+initial access to data staging and attempted exfiltration.
+
+The attack relied heavily on Living-off-the-Land techniques and legitimate
+administrative tooling, highlighting the importance of behavioural detection
+and threat hunting within SOC operations.
+
+---
