@@ -1,0 +1,134 @@
+# 🛡️ CTI Investigation Report – Friday Overtime (TryHackMe)
+
+## 📖 Executive Summary
+
+This report documents a **Cyber Threat Intelligence investigation** performed in the TryHackMe room “Friday Overtime.” The scenario placed the analyst in a CTI environment at PandaProbe Intelligence, where a ticket flagged potential malware threats at a financial company.
+
+The investigation involved analysing malware samples, identifying malicious infrastructure, mapping behaviour to ATT&CK techniques, and extracting Indicators of Compromise (IOCs) using OSINT and analysis tools such as VirusTotal and CyberChef. :contentReference[oaicite:1]{index=1}
+
+---
+
+## 🧪 Lab Context
+
+- **Platform:** TryHackMe  
+- **Room:** Friday Overtime  
+- **Role:** Cyber Threat Intelligence Analyst  
+- **Tools:** DocIntel platform, Terminal, VirusTotal, CyberChef, Web Search  
+- **Goal:** Identify malware artefacts, map them to frameworks, and extract actionable threat intelligence. :contentReference[oaicite:2]{index=2}
+
+---
+
+## 🔍 Investigation Walkthrough
+
+### 🧩 Initial Case Review – Sender Identification
+
+The investigation began by accessing the DocIntel platform to review the ticket details. The sender of the reported malware samples was identified to establish context and point of contact.
+
+📸 Screenshot:  
+`screenshots/01_sender_identified.png`
+
+**Explanation:**  
+The screenshot shows the DocIntel dashboard with the ticket opened. It contains the name **Oliver Bennett**, confirming who shared the malware samples. :contentReference[oaicite:3]{index=3}
+
+---
+
+### 🧪 Malware Sample Extraction – Hash Calculation
+
+The next step involved extracting malware samples from the provided archive (`samples.zip`) and calculating hashes for analysis.
+
+📸 Screenshot:  
+`screenshots/02_prsm_dll_hash.png`
+
+**Explanation:**  
+The screenshot displays terminal output where `sha1sum pRsm.dll` was used to compute the SHA1 hash of the `pRsm.dll` file. The resulting hash (`9d1ecbbe8637fed0d89fca1af35ea821277ad2e8`) confirms the identity of the artefact. :contentReference[oaicite:4]{index=4}
+
+---
+
+### 🧬 Malware Family Mapping – Framework Identification
+
+To understand the malware context, OSINT research was conducted on the artefact hash.
+
+📸 Screenshot:  
+`screenshots/03_malware_framework.png`
+
+**Explanation:**  
+The screenshot shows search results linking `pRsm.dll` to the **MgBot** malware framework, a modular backdoor used in known threat activity. :contentReference[oaicite:5]{index=5}
+
+---
+
+### 🎯 ATT&CK Technique Mapping
+
+Understanding adversary behaviour requires mapping observed actions to documented techniques.
+
+📸 Screenshot:  
+`screenshots/04_mitre_attack_t1123.png`
+
+**Explanation:**  
+This screenshot shows reference material linking the `pRsm.dll` module to MITRE ATT&CK Technique **T1123 (Audio Capture)**, indicating the malware’s capability. :contentReference[oaicite:6]{index=6}
+
+---
+
+### 🌐 IOC Discovery – Defanged Malicious URL
+
+The next task identified the malicious download URL, which required safe “defanging” for reporting.
+
+📸 Screenshot:  
+`screenshots/05_defanged_url.png`
+
+**Explanation:**  
+The screenshot displays the CyberChef tool with the “Defang URL” operation applied to the malicious URL first seen on 2020–11–02. The defanged result (`hxxp[://]update[.]browser[.]qq[.]com/qmbs/QQ/QQUrlMgr_QQ88_4296[.]exe`) is safe for reporting. :contentReference[oaicite:7]{index=7}
+
+---
+
+### 🛰️ IOC Discovery – Defanged C&C IP
+
+Identifying infrastructure communication is key for network-level detections.
+
+📸 Screenshot:  
+`screenshots/06_defanged_ip.png`
+
+**Explanation:**  
+The screenshot shows “Defang IP Addresses” in CyberChef applied to the command-and-control server IP first detected on 2020–09–14. The defanged IP (`122[.]10[.]90[.]12`) can be used in IOC lists. :contentReference[oaicite:8]{index=8}
+
+---
+
+### 📲 Secondary Malware Identification
+
+To understand broader threat activity, additional malware hosted on the same server was investigated.
+
+📸 Screenshot:  
+`screenshots/07_spyagent_hash.png`
+
+**Explanation:**  
+This display shows the VirusTotal “Relations” tab uncovering the **SpyAgent spyware** targeting Android devices. The SHA1 hash `1c1fe906e822012f6235fcc53f601d006d15d7be` confirms the artefact’s link to the server. :contentReference[oaicite:9]{index=9}
+
+---
+
+## 🚨 Indicators of Compromise (IOCs)
+
+| IOC Type                     | Value                                                      |
+|-----------------------------|------------------------------------------------------------|
+| Malware Sample Sender       | Oliver Bennett                                             |
+| pRsm.dll SHA1               | 9d1ecbbe8637fed0d89fca1af35ea821277ad2e8                   |
+| Malware Framework           | MgBot                                                      |
+| ATT&CK Technique            | T1123 (Audio Capture)                                      |
+| Malicious Download URL      | hxxp[://]update[.]browser[.]qq[.]com/qmbs/QQUrlMgr_QQ88_4296[.]exe |
+| C&C Server IP              | 122[.]10[.]90[.]12                                          |
+| Spyware SHA1                | 1c1fe906e822012f6235fcc53f601d006d15d7be                   |
+
+---
+
+## 📘 Conclusion
+
+This investigation successfully traced the malware artefacts from initial submission through OSINT enrichment and IOC extraction. Mapping capabilities to MITRE ATT&CK and identifying malicious infrastructure provides actionable intelligence for SOC detection and defensive tuning. :contentReference[oaicite:10]{index=10}
+
+---
+
+## 🛠️ Recommended Mitigations
+
+1. Integrate identified IOCs into security monitoring systems.  
+2. Create detections for modules with behavior matching T1123.  
+3. Periodically monitor related domains and IP infrastructure for changes.
+
+---
+
