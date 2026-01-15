@@ -1,0 +1,199 @@
+# 🔴 Red Team Learning Report – Tokyo Ghoul (TryHackMe)
+
+## 📖 Overview
+
+This report documents a red team–style attack simulation conducted in the
+TryHackMe room “Tokyo Ghoul”.
+
+The room was intentionally challenging and required chaining together multiple
+techniques including enumeration, service misconfiguration abuse, web
+vulnerabilities, and privilege escalation.
+
+This engagement was difficult, and walkthroughs were used as a learning aid
+to understand the intended attack paths. The goal of this report is not to
+claim mastery, but to document the attack flow, demonstrate understanding of
+the techniques involved, and reflect honestly on the learning process.
+
+---
+
+## 🎯 Engagement Scope
+
+- Target: Single Linux host
+- Attack Type: External, unauthenticated
+- Methodology: Enumeration → Exploitation → Privilege Escalation
+- Environment: Controlled lab
+- Note: Walkthrough assistance was used due to the difficulty of the room
+
+---
+
+## 🧭 Attack Timeline & Execution
+
+---
+
+### Phase 1 – Network Reconnaissance
+
+The engagement began with network reconnaissance to identify exposed services
+and potential entry points.
+
+📸 Screenshot Evidence:  
+`screenshots/01_network_enumeration.png`
+
+**What this shows:**  
+The screenshot displays scan results revealing open ports and services,
+establishing the initial attack surface available to an attacker.
+
+---
+
+### Phase 2 – FTP Service Enumeration
+
+An FTP service was identified and tested during enumeration. The service was
+found to allow anonymous authentication.
+
+📸 Screenshot Evidence:  
+`screenshots/02_anonymous_ftp_login.png`
+
+**What this shows:**  
+The screenshot confirms successful anonymous FTP login, demonstrating a common
+misconfiguration that lowers the barrier to entry for attackers.
+
+---
+
+### Phase 3 – File Discovery via FTP
+
+Files accessible through the FTP service were reviewed and downloaded for
+further analysis.
+
+📸 Screenshot Evidence:  
+`screenshots/03_ftp_file_listing.png`
+
+**What this shows:**  
+The screenshot shows exposed files available to unauthenticated users, which
+later contributed to further compromise steps.
+
+---
+
+### Phase 4 – Hidden Data & Encoding Analysis
+
+Some of the retrieved files contained hidden or encoded information. Multiple
+decoding steps were required to extract usable data.
+
+This stage was particularly challenging and required walkthrough reference
+to understand the intended decoding techniques.
+
+📸 Screenshot Evidence:  
+`screenshots/04_decoded_hidden_content.png`
+
+**What this shows:**  
+The screenshot demonstrates successful decoding of hidden content, showing how
+information was concealed rather than securely protected.
+
+---
+
+### Phase 5 – Web Enumeration
+
+Using clues obtained earlier, focus shifted to the web service running on the
+host. Directory and endpoint enumeration revealed additional attack vectors.
+
+📸 Screenshot Evidence:  
+`screenshots/05_web_directory_enumeration.png`
+
+**What this shows:**  
+The screenshot highlights discovered web directories or parameters that were
+not intended to be publicly accessible.
+
+---
+
+### Phase 6 – Local File Inclusion (LFI)
+
+One of the discovered web endpoints was vulnerable to Local File Inclusion,
+allowing access to sensitive system files.
+
+📸 Screenshot Evidence:  
+`screenshots/06_lfi_successful.png`
+
+**What this shows:**  
+The screenshot confirms successful file inclusion, proving improper input
+validation and access controls.
+
+---
+
+### Phase 7 – Credential Discovery
+
+Data gathered through LFI and enumeration led to the discovery of valid
+credentials that enabled authenticated access.
+
+📸 Screenshot Evidence:  
+`screenshots/07_credentials_discovered.png`
+
+**What this shows:**  
+The screenshot displays recovered credential information that allowed progress
+to the next attack phase.
+
+---
+
+### Phase 8 – Initial Shell Access
+
+Using the discovered credentials, initial shell access was obtained on the
+target system.
+
+📸 Screenshot Evidence:  
+`screenshots/08_initial_shell_access.png`
+
+**What this shows:**  
+The screenshot confirms a successful shell session under a non-privileged user,
+marking full initial compromise.
+
+---
+
+### Phase 9 – Privilege Escalation Enumeration
+
+Post-compromise enumeration was performed to identify privilege escalation
+opportunities. The environment was intentionally restricted, making escalation
+non-trivial.
+
+📸 Screenshot Evidence:  
+`screenshots/09_privilege_escalation_enumeration.png`
+
+**What this shows:**  
+The screenshot captures enumeration attempts within the restricted
+environment, highlighting potential escalation vectors.
+
+---
+
+### Phase 10 – Privilege Escalation
+
+A weakness in the restricted execution environment was exploited to escape
+limitations and elevate privileges.
+
+This step required careful study of the walkthrough to fully understand the
+escape mechanism.
+
+📸 Screenshot Evidence:  
+`screenshots/10_privilege_escalation_success.png`
+
+**What this shows:**  
+The screenshot confirms successful privilege escalation, completing the attack
+chain.
+
+---
+
+## 🧠 Key Learning Reflections
+
+- Enumeration is more important than complex exploits
+- Obscurity (encoding, hidden data) is not a security control
+- Chaining small weaknesses is often more effective than exploiting one big flaw
+- Some attack paths are non-obvious and require study to understand
+- Using walkthroughs responsibly can deepen learning when a concept is difficult
+
+---
+
+## 📘 Conclusion
+
+Tokyo Ghoul was a challenging room that pushed me outside my comfort zone.
+While walkthrough assistance was required, it helped clarify attacker logic
+and reinforced how real-world attack chains are constructed.
+
+This experience strengthened my understanding of red team fundamentals and
+highlighted the importance of persistence and curiosity in security learning.
+
+---
