@@ -1,0 +1,124 @@
+# 🔍 Dynamic Application Security Testing (DAST) Report – TryHackMe
+
+## 🧠 Objective
+
+This document captures a **practical investigation into Dynamic Application Security Testing (DAST)** — a security testing method that mimics real-world attackers by probing a *running web application* for vulnerabilities. :contentReference[oaicite:0]{index=0}
+
+The goal was to perform a dynamic analysis of a live web application, using tools and techniques analogous to what real attackers and defenders use in the wild.
+
+---
+
+## 🧪 Methodology Summary
+
+DAST is a **black-box security testing approach** — meaning no source code access is required. Instead, the application is attacked from the outside while running. :contentReference[oaicite:1]{index=1}
+
+Typically, DAST involves:
+
+• **Spidering/crawling** the application to map endpoints  
+• **Injecting malicious inputs** to test for vulnerabilities  
+• **Active scanning** for common weaknesses like SQLi or XSS  
+• Reviewing parameter responses for unexpected behavior  
+• Manual and automated assessments to complement each other :contentReference[oaicite:2]{index=2}
+
+Each section below represents a practical step taken during the room walkthrough.
+
+---
+
+## 🔍 Investigation Steps
+
+---
+
+### 1️⃣ Initial App Mapping — Spidering
+
+Using a DAST tool (e.g., OWASP ZAP), the first step was to spider the application to discover all reachable URLs and parameters that might be vulnerable.
+
+📸 Screenshot:  
+`screenshots/01_spidering_map.png`
+
+**Explanation:**  
+This screenshot shows the application’s site map after spidering, revealing multiple endpoints that can be probed further.
+
+---
+
+### 2️⃣ Crawling Limitations — AJAX Spider
+
+Regular spidering often misses dynamically generated routes (e.g., JS-generated links). AJAX spidering was used to overcome this.
+
+📸 Screenshot:  
+`screenshots/02_ajax_spider_results.png`
+
+**Explanation:**  
+This screenshot shows additional URLs discovered via AJAX crawling that were not found via static link parsing.
+
+---
+
+### 3️⃣ Scan Policy Configuration
+
+Before active vulnerability scanning, the scan policy was customized to disable irrelevant categories (e.g., SQLi tests on an app with no database).
+
+📸 Screenshot:  
+`screenshots/03_scan_policy_setup.png`
+
+**Explanation:**  
+The screenshot displays the scan policy manager, showing selective activation and strength adjustments for scan rules.
+
+---
+
+### 4️⃣ Running Active Scan
+
+Once mapping and policies were set, an active DAST scan was executed against the application to detect real vulnerabilities.
+
+📸 Screenshot:  
+`screenshots/04_dast_active_scan.png`
+
+**Explanation:**  
+This screenshot shows active scan progress and initial findings detected by the DAST tool.
+
+---
+
+### 5️⃣ Authenticated Scanning
+
+To test authenticated functionality, the authentication workflow was recorded and configured so that the scanner could inject payloads while logged in.
+
+📸 Screenshot:  
+`screenshots/05_authenticated_scan_setup.png`
+
+**Explanation:**  
+Shows the configuration needed to authenticate before scanning secured areas of the app.
+
+---
+
+### 6️⃣ Vulnerability Discovery
+
+The scanner identified one or more critical vulnerabilities (e.g., path traversal, OS command injection).
+
+📸 Screenshot:  
+`screenshots/06_vulnerability_results.png`
+
+**Explanation:**  
+This screenshot shows the final high-risk alerts reported by the DAST tool after a complete authenticated scan.
+
+---
+
+## 🧠 Key Findings
+
+- DAST is a **runtime analysis method** that interacts with a live app the same way an external attacker would. :contentReference[oaicite:3]{index=3}  
+- It does **not inspect source code** — instead it finds runtime flaws only visible in execution. :contentReference[oaicite:4]{index=4}  
+- Spidering coverage determines how deep a scan goes — missing endpoints can hide significant weaknesses.  
+- Proper **authenticated scanning** uncovers flows that unauthenticated tests cannot.
+
+---
+
+## 📘 Conclusion
+
+Dynamic Application Security Testing (DAST) is a crucial method for discovering vulnerabilities that only manifest at runtime — ones attackers can exploit directly.  
+
+This investigation demonstrated how to:
+- map an application dynamically,
+- tune a scanner for efficiency,
+- perform authenticated scans, and
+- interpret actionable findings.
+
+DAST works in complement with other methodologies like SAST and manual penetration testing to provide a fuller security picture. :contentReference[oaicite:5]{index=5}
+
+---
