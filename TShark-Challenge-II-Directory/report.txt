@@ -1,0 +1,162 @@
+=================================================
+SOC INCIDENT REPORT
+TShark Challenge II: Directory
+=================================================
+
+Analyst: messedupmohit
+Platform: TryHackMe
+Tool Used: TShark, VirusTotal, Linux CLI
+PCAP File: directory-curiosity.pcap
+
+-------------------------------------------------
+1. Objective
+-------------------------------------------------
+
+The goal of this investigation was to analyse the provided packet capture to identify signs of malicious activity, extract threats, and document findings in a SOC-style report.
+
+-------------------------------------------------
+2. Malicious/Suspicious Domain
+-------------------------------------------------
+
+DNS and HTTP traffic were analysed to locate domains of interest contacted in the capture.
+
+Finding:
+A malicious/suspicious domain was identified according to threat intelligence lookup.
+
+Malicious/Suspicious Domain (defanged):
+jx2-bavuong[.]com
+
+Screenshot reference:
+screenshots/01_malicious_domain.png
+
+-------------------------------------------------
+3. Total HTTP Requests to Malicious Domain
+-------------------------------------------------
+
+HTTP traffic filtered for requests involving the suspicious domain yielded the total count of interactions.
+
+Total HTTP Requests to Domain:
+14
+
+Screenshot reference:
+screenshots/02_http_requests_count.png
+
+-------------------------------------------------
+4. IP Address Associated with Malicious Domain
+-------------------------------------------------
+
+IP resolution associated with the suspicious domain was identified by inspecting DNS and HTTP context.
+
+Malicious IP (defanged):
+141[.]164[.]41[.]174
+
+Screenshot reference:
+screenshots/03_malicious_ip.png
+
+-------------------------------------------------
+5. Server Information of Suspicious Domain
+-------------------------------------------------
+
+Server response header values revealed details about the web server hosting the suspicious content.
+
+Server Info:
+Apache/2.2.11 (Win32) DAV/2 mod_ssl/2.2.11 OpenSSL/0.9.8i PHP/5.2.9
+
+Screenshot reference:
+screenshots/04_server_info.png
+
+-------------------------------------------------
+6. Number of Listed Files
+-------------------------------------------------
+
+Following the first TCP stream in ASCII revealed the indexed file listing presented to the client.
+
+Number of Files Listed:
+3
+
+Screenshot reference:
+screenshots/05_listed_files_count.png
+
+-------------------------------------------------
+7. First File Name Listed
+-------------------------------------------------
+
+The first file in the directory index was identified from the TCP stream output.
+
+First Filename (defanged):
+123[.]php
+
+Screenshot reference:
+screenshots/06_first_file.png
+
+-------------------------------------------------
+8. Downloaded Executable File Name
+-------------------------------------------------
+
+HTTP object extraction isolated and saved binary objects. The executable file was identified in this set.
+
+Downloaded Executable File (defanged):
+vlauto[.]exe
+
+Screenshot reference:
+screenshots/07_downloaded_exe.png
+
+-------------------------------------------------
+9. SHA256 Value of Malicious File
+-------------------------------------------------
+
+The SHA256 hash of the downloaded executable was computed for threat enrichment.
+
+SHA256 Value:
+b4851333efaf399889456f78eac0fd532e9d8791b23a86a19402c1164aed20de
+
+Screenshot reference:
+screenshots/08_sha256_hash.png
+
+-------------------------------------------------
+10. PEiD Packer Value (Threat Intelligence)
+-------------------------------------------------
+
+VirusTotal lookup of the SHA256 hash provided metadata including the packer classification.
+
+PEiD Packer Value:
+.NET executable
+
+Screenshot reference:
+screenshots/09_peid_packer.png
+
+-------------------------------------------------
+11. Lastline Sandbox Classification
+-------------------------------------------------
+
+Dynamic analysis via VirusTotal’s sandbox flagged the executable’s behavior.
+
+Lastline Sandbox Flag:
+MALWARE TROJAN
+
+Screenshot reference:
+screenshots/10_lastline_sandbox.png
+
+-------------------------------------------------
+12. Detection Opportunities
+-------------------------------------------------
+
+Based on the findings, potential detection logic includes:
+
+- Alert on HTTP requests to suspicious, low-reputation domains
+- DNS monitoring for domains flagged by threat feeds such as VirusTotal
+- HTTP object extraction and hashing to trigger malware detection workflows
+- Correlate HTTP directory index responses with executable downloads
+- Integrate server-header profiling to detect uncommon server stacks in suspicious contexts
+
+These detections could improve early identification of similar phishing and malware distribution activity.
+
+-------------------------------------------------
+13. Conclusion
+-------------------------------------------------
+
+The packet capture confirmed a malicious outcome consistent with the alert criteria. A suspicious domain hosted an index of files, including an executable that was flagged as a Trojan in sandbox analysis. The volume of HTTP interactions and extracted artifacts supports escalation in a SOC environment.
+
+-------------------------------------------------
+End of Report
+-------------------------------------------------
