@@ -1,0 +1,111 @@
+=================================================
+SOC INCIDENT REPORT
+TShark Challenge I: Teamwork
+=================================================
+
+Analyst: Mohit Kukreja
+Platform: TryHackMe
+Tool Used: TShark
+PCAP File: teamwork.pcap
+
+-------------------------------------------------
+1. Objective
+-------------------------------------------------
+
+The objective of this investigation was to analyse a provided packet capture file to identify suspicious network activity, extract indicators of compromise, and document findings in a manner consistent with a Blue Team SOC investigation.
+
+-------------------------------------------------
+2. Identification of Suspicious Domain
+-------------------------------------------------
+
+DNS traffic within the packet capture was analysed to enumerate queried domain names and identify anomalous patterns.
+
+Finding:
+A suspicious domain was identified that appears to impersonate a legitimate payment service.
+
+Suspicious Domain:
+www.paypal.com4uswebappsresetaccountrecovery.timeseaways.com
+
+Screenshot reference:
+screenshots/01_domain_identified.png
+
+-------------------------------------------------
+3. VirusTotal Intelligence Lookup
+-------------------------------------------------
+
+The suspicious domain was submitted to VirusTotal to gather threat intelligence and historical context.
+
+Finding:
+The domain had been previously submitted and flagged as suspicious.
+
+First Submission Timestamp:
+[Timestamp as shown on VirusTotal]
+
+Screenshot reference:
+screenshots/02_virustotal_first_submission.png
+
+-------------------------------------------------
+4. Impersonated Service
+-------------------------------------------------
+
+Based on domain structure and naming conventions, the malicious domain was designed to impersonate a legitimate online service.
+
+Impersonated Service:
+PayPal
+
+-------------------------------------------------
+5. IP Address Associated with Malicious Domain
+-------------------------------------------------
+
+DNS response traffic was analysed to identify the IP address resolving the malicious domain.
+
+Finding:
+Malicious IP Address:
+184.154.127.226
+
+Screenshot reference:
+screenshots/03_domain_ip_resolution.png
+
+-------------------------------------------------
+6. Credential Exposure via HTTP POST
+-------------------------------------------------
+
+HTTP traffic was analysed to identify POST requests containing sensitive user-submitted data.
+
+Finding:
+An email address was extracted from HTTP POST form data.
+
+Email Address Found:
+johnny5alive@gmail.com
+
+Screenshot reference:
+screenshots/04_http_post_email.png
+
+-------------------------------------------------
+7. Detection Opportunities
+-------------------------------------------------
+
+Based on the observed activity, the following detection opportunities could be implemented within a SOC environment:
+
+- DNS monitoring rules to flag domains containing brand impersonation patterns such as "paypal" combined with excessive subdomains or keyword stuffing
+- Alerts on newly registered or low-reputation domains resolving within the network
+- HTTP inspection rules to detect cleartext credential submission via POST requests
+- Correlation rules linking suspicious DNS queries with subsequent HTTP traffic to the same destination
+- Integration of threat intelligence feeds (e.g., VirusTotal) to enrich DNS and HTTP logs in real time
+
+These detections would help identify similar phishing and credential-harvesting activity earlier in the attack lifecycle.
+
+-------------------------------------------------
+8. Conclusion
+-------------------------------------------------
+
+The packet capture contained clear indicators of phishing activity, including:
+- A deceptive domain impersonating a trusted payment service
+- Associated malicious infrastructure
+- Credential submission over HTTP
+
+In a production SOC environment, this activity would warrant escalation, indicator blocking, and further user impact assessment.
+
+-------------------------------------------------
+End of Report
+-------------------------------------------------
