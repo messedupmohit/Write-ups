@@ -16,3 +16,4 @@ The purpose of this repository is to demonstrate hands-on investigation skills, 
 - Indicator of Compromise (IOC) identification
 - Incident investigation and reporting
 - SOC-style documentation
+- Log analysis
