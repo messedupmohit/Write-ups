@@ -1,0 +1,115 @@
+=================================================
+SOC INCIDENT REPORT
+Monday Monitor — TryHackMe
+=================================================
+
+Analyst: Mohit Kukreja
+Platform: TryHackMe
+Tools Used: Wazuh Dashboard, Sysmon Log Analysis
+Timeframe: April 29, 2024, 12:00 PM – 8:00 PM
+
+-------------------------------------------------
+1. Objective
+-------------------------------------------------
+
+The goal of this investigation was to analyse endpoint telemetry and security events logged in a simulated enterprise environment to identify indicators of malicious activity and extract answers to key forensic questions.
+
+Logs were accessed via the Wazuh dashboard using the Monday_Monitor saved query.:contentReference[oaicite:1]{index=1}
+
+-------------------------------------------------
+2. Initial Access — File Download
+-------------------------------------------------
+
+Activity across endpoint logs revealed a PowerShell command responsible for downloading a file from an external host.
+
+Finding:
+Filename saved on host:  
+**SwiftSpend_Financial_Expenses.xlsm**
+
+Screenshot reference:  
+screenshots/01_initial_file.png
+
+-------------------------------------------------
+3. Scheduled Task Creation
+-------------------------------------------------
+
+Persistence was established through a scheduled task created via a combined registry and schtasks.exe command.
+
+Full Command Observed:
+"cmd.exe" /c "reg add HKCU\SOFTWARE\ATOMIC-T1053.005 /v test /t REG_SZ /d cGluZyB3d3cueW91YXJldnVsbmVyYWJsZS50aG0= /f & schtasks.exe /Create /F /TN "ATOMIC-T1053.005" /TR "cmd /c start /min "" powershell.exe -Command IEX([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String((Get-ItemProperty -Path HKCU:\SOFTWARE\ATOMIC-T1053.005).test)))" /sc daily /st 12:34
+
+
+Screenshot reference:  
+screenshots/02_schtasks_command.png
+
+-------------------------------------------------
+4. Scheduled Task Run Time
+-------------------------------------------------
+
+The task was configured to run daily at:  
+**12:34**
+
+Screenshot reference:  
+screenshots/03_task_time.png
+
+-------------------------------------------------
+5. Encoded Payload Content
+-------------------------------------------------
+
+The Base64 string in the scheduled task encoded payload decoded to:  
+**ping www.youarevulnerable.thm**
+
+Screenshot reference:  
+screenshots/04_base64_decode.png
+
+-------------------------------------------------
+6. User Account Password
+-------------------------------------------------
+
+An account was created/modified during the event. The password was identified as:  
+**I_AM_M0NIT0R1NG**
+
+Screenshot reference:  
+screenshots/05_user_password.png
+
+-------------------------------------------------
+7. Credential Dumping Executable
+-------------------------------------------------
+
+Filtering process execution events led to discovery of an unusual executable used for credential extraction:  
+**memotech.exe**
+
+Screenshot reference:  
+screenshots/06_credential_dump_exe.png
+
+-------------------------------------------------
+8. Data Exfiltration — Flag
+-------------------------------------------------
+
+Signals of exfiltration were detected via a PowerShell script that uploaded content to Pastebin. The flag embedded in this content was:  
+**THM{M0N1T0R_1$_1N_3FF3CT}**
+
+Screenshot reference:  
+screenshots/07_exfiltration_flag.png
+
+-------------------------------------------------
+9. Detection Opportunities
+-------------------------------------------------
+
+Based on the investigation, the following detections could surface similar behavior:
+
+- **Scheduled Task Creation Alerts** — Alert on unexpected schtasks.exe invocation paired with registry manipulation
+- **Base64 Execution Patterns** — Detect persistent encoded payload execution via powershell.exe
+- **Unauthorized Credential Dumping Binaries** — Flag non-standard executables accessing LSASS or credential APIs
+- **Outbound Exfiltration Patterns** — Track PowerShell uploads to suspicious endpoints (e.g., Pastebin)
+- **Endpoint Process Anomalies** — Identify unknown child processes from cmd.exe or powershell.exe
+
+-------------------------------------------------
+10. Conclusion
+-------------------------------------------------
+
+This endpoint log analysis revealed a multi-stage intrusion involving payload download, persistence, credential access, and data exfiltration. Indicators extracted provide opportunities for both detection engineering and threat hunting.
+
+-------------------------------------------------
+End of Report
+-------------------------------------------------
