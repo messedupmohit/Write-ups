@@ -30,3 +30,4 @@ In this exercise, we investigated simulated malicious activity on a Windows host
 - Wazuh SIEM Dashboard
 - Sysmon log event analysis
 - Base64 decoding tools (e.g., CyberChef)
+
