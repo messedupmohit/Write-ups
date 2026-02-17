@@ -1,0 +1,104 @@
+=================================================
+SOC INCIDENT REPORT
+Threat Hunting With YARA — Hands-On Exercise
+=================================================
+
+Analyst: Mohit Kukreja
+Platform: TryHackMe
+Tool Used: YARA
+Scope: Practical rule creation and artifact hunting
+
+-------------------------------------------------
+1. Objective
+-------------------------------------------------
+
+The objective of this hands-on exercise was to create and execute YARA rules against a provided dataset in order to detect suspicious patterns and extract relevant findings.
+
+The investigation focused on rule creation, execution, match validation, and contextual interpretation of results.
+
+-------------------------------------------------
+2. YARA Rule Creation
+-------------------------------------------------
+
+A custom YARA rule was written to detect the specified malicious string/pattern provided in the challenge.
+
+The rule definition and syntax validation are shown below.
+
+Screenshot reference:
+screenshots/01_yara_rule_created.png
+
+
+-------------------------------------------------
+3. YARA Rule Execution Against Dataset
+-------------------------------------------------
+
+The custom rule was executed against the provided dataset using the YARA CLI.
+
+The command execution and resulting matches are shown below.
+
+Screenshot reference:
+screenshots/02_yara_execution_output.png
+
+
+
+-------------------------------------------------
+4. Identified Matched File(s)
+-------------------------------------------------
+
+The YARA execution returned one or more file matches indicating the presence of the suspicious pattern.
+
+Matched file names and paths are shown below.
+
+Screenshot reference:
+screenshots/03_matched_files.png
+
+-------------------------------------------------
+5. Verification of Matched Content
+-------------------------------------------------
+
+Each matched file was manually inspected to confirm the presence of the detected string/pattern.
+
+The extracted content confirming the detection is shown below.
+
+Screenshot reference:
+screenshots/04_matched_content_verification.png
+
+-------------------------------------------------
+6. Rule Refinement (If Applicable)
+-------------------------------------------------
+
+If rule tuning was required (e.g., case sensitivity, modifiers, condition adjustment), the refined rule execution is shown below.
+
+Screenshot reference:
+screenshots/05_rule_refinement.png
+
+
+-------------------------------------------------
+7. Final Findings
+-------------------------------------------------
+
+The custom YARA rule successfully detected the required pattern within the dataset. The matched artifact(s) validate the rule logic and demonstrate practical threat hunting capability using signature-based detection.
+
+This exercise reinforces the importance of:
+
+- Proper rule syntax structure
+- String matching techniques
+- Conditional logic in YARA
+- Validation of detection output
+- Manual verification of flagged artifacts
+
+-------------------------------------------------
+8. Detection Opportunities
+-------------------------------------------------
+
+Based on this exercise, the following detection implementations are recommended in a SOC environment:
+
+- Deploy custom YARA rules across endpoint forensic collections
+- Integrate YARA scanning within EDR or threat hunting pipelines
+- Automate alerting for newly introduced rule matches
+- Correlate YARA hits with process execution and user context
+- Periodically review and refine rules to reduce false positives
+
+-------------------------------------------------
+End of Hands-On Report
+-------------------------------------------------
