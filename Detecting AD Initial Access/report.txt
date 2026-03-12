@@ -1,0 +1,94 @@
+Title: Detecting AD Initial Access – Investigation Challenge
+Platform: TryHackMe
+Tool Used: Splunk
+Log Sources: IIS Logs (index=iis), Windows/Sysmon Logs (index=win)
+
+--------------------------------------------------
+
+Scenario
+
+The SOC team received an alert regarding unusual HTTP activity on an IIS web server. 
+The alert was triggered by a high volume of HTTP 404 responses originating from a single external IP address.
+
+The objective of this investigation was to determine whether the activity was malicious and reconstruct the attacker’s actions.
+
+--------------------------------------------------
+
+Investigation
+
+1. Identify Reconnaissance Activity
+
+Search for excessive HTTP 404 responses to identify suspicious scanning activity.
+
+Splunk Query:
+index=iis status=404
+
+Result:
+A single external IP generated a large number of 404 responses, indicating reconnaissance attempts to discover hidden resources on the web server.
+
+Screenshot:
+screenshots/01_404_recon_activity.png
+
+--------------------------------------------------
+
+2. Identify Web Shell Upload
+
+Investigated POST requests to determine if the attacker uploaded any malicious files.
+
+Splunk Query:
+index=iis method=POST
+
+Result:
+A suspicious POST request revealed that a web shell was uploaded to the server.
+
+Web Shell Upload Path:
+/internalapp/upload.aspx
+
+Screenshot:
+screenshots/02_webshell_upload.png
+
+--------------------------------------------------
+
+3. Confirm File Creation
+
+Reviewed Windows Sysmon logs to confirm file creation activity related to the web shell.
+
+Splunk Query:
+index=win EventCode=11
+
+Result:
+File creation logs confirmed the web shell deployment.
+
+Web Shell Filename:
+error.aspx
+
+File Creation Time:
+2026-02-17 10:40:33
+
+Screenshot:
+screenshots/03_webshell_creation.png
+
+--------------------------------------------------
+
+4. Investigate Web Shell Activity
+
+Analyzed HTTP requests to identify commands executed through the web shell.
+
+Result:
+The attacker executed reconnaissance commands through the deployed web shell.
+
+First Command Executed:
+Hostname
+
+Screenshot:
+screenshots/04_webshell_command.png
+
+--------------------------------------------------
+
+Conclusion
+
+The investigation confirmed that an attacker conducted reconnaissance against the IIS server before successfully uploading a web shell. The web shell was then used to execute commands remotely on the compromised server.
+
+Early detection of abnormal HTTP patterns helped identify the attack and reconstruct the incident timeline.
+
+--------------------------------------------------
