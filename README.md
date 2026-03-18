@@ -7,7 +7,7 @@ The purpose of this repository is to demonstrate hands-on investigation skills, 
 
 ---
 
-## Skills Demonstrated
+## Skills Demonstrated 
  
 - Phishing email investigation
 - Email header analysis
